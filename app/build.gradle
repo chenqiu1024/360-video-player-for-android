@@ -18,6 +18,42 @@ model {
                 proguardFiles.add(file("proguard-rules.pro"))
             }
         }
+
+        ndk {
+            moduleName = "madvframework"
+            cppFlags.addAll(["-Werror", "-fno-rtti", "-fno-exceptions", "-std=gnu++11"])
+            cppFlags.addAll(["-DTARGET_CPU_ARM=1", "-DTARGET_OS_LINUX=1", "-DTARGET_OS_ANDROID=1"])
+            cppFlags.add("-I" + file("src/main/jni/kazmath/include/kazmath").absolutePath)
+            cppFlags.add("-I" + file("src/main/jni").absolutePath)
+            cppFlags.add("-I" + file("src/main/jni/libpng").absolutePath)
+            cppFlags.add("-I" + file("src/main/jni/GLFilters").absolutePath)
+            CFlags.add("-I" + file("src/main/jni/kazmath/include/kazmath").absolutePath)
+            CFlags.add("-I" + file("src/main/jni").absolutePath)
+            CFlags.add("-I" + file("src/main/jni/libpng").absolutePath)
+            CFlags.add("-I" + file("src/main/jni/GLFilters").absolutePath)
+            CFlags.addAll(["-Werror"])
+            CFlags.addAll(["-DTARGET_CPU_ARM=1", "-DTARGET_OS_LINUX=1", "-DTARGET_OS_ANDROID=1"])
+
+            ldFlags.add("-L/Users/domqiu/Projects/App-Android/app/src/main/jni/libjpegturbo/libjpeg.a")
+            ldFlags.add("-L/Users/domqiu/Projects/App-Android/app/src/main/jni/libjpegturbo/libturbojpeg.a")
+//            ldFlags.add(file("-L" + "/Users/domqiu/Projects/App-Android/app/src/main/jni/libjpegturbo/libturbojpeg.a").absolutePath)
+//            ldFlags += "-L/Users/domqiu/Projects/App-Android/app/src/main/jni/libjpegturbo/libjpeg.a"
+//            ldFlags += "-L/Users/domqiu/Projects/App-Android/app/src/main/jni/libjpegturbo/libturbojpeg.a"
+//            ldFlags += "-Lsrc/main/jni/libjpegturbo/libjpeg.a"
+//            ldFlags += "-Lsrc/main/jni/libjpegturbo/libturbojpeg.a"
+            ldLibs.addAll(["log", "GLESv3", "EGL", "z"])
+//            ldLibs.addAll(["log", "GLESv3", "EGL", "z", "jpeg", "turbojpeg"])
+
+            stl = "stlport_static"
+
+            abiFilters.add("armeabi")
+//            abiFilters.add("armeabi-v7a")
+//            abiFilters.add("arm64-v8a")
+//            abiFilters.add("mips")
+//            abiFilters.add("mips64")
+            abiFilters.add("x86")
+//            abiFilters.add("x86_64")
+        }
     }
 }
 
