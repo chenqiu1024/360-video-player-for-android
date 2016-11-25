@@ -20,6 +20,7 @@ import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Handler;
@@ -38,6 +39,8 @@ import android.view.View;
 
 import static com.oculus.sample.SphericalPlayerActivity.toast;
 
+import com.madv360.glrenderer.MadvGLRenderer;
+import com.madv360.glrenderer.Vec2f;
 import com.oculus.sample.gles.EGLRenderTarget;
 import com.oculus.sample.gles.GLHelpers;
 import com.oculus.sample.gles.SphericalSceneRenderer;
@@ -226,7 +229,8 @@ public class SphericalVideoPlayer extends TextureView {
         private boolean frameAvailable;
         private boolean pendingCameraUpdate;
 
-        private SphericalSceneRenderer renderer;
+//        private SphericalSceneRenderer renderer;
+        private MadvGLRenderer renderer;
 
         private class ChoreographerCallback implements Choreographer.FrameCallback {
             @Override
@@ -287,8 +291,12 @@ public class SphericalVideoPlayer extends TextureView {
             return new Surface(videoSurfaceTexture);
         }
 
+        private int mWidth, mHeight;
+
         private void onSurfaceAvailable(SurfaceTexture surfaceTexture, int width, int height) {
             Log.d(TAG, "onSurfaceAvailable w: " + width + " h: " + height);
+            mWidth = width;
+            mHeight = height;
 
             eglRenderTarget.createRenderSurface(surfaceTexture);
 
@@ -305,7 +313,8 @@ public class SphericalVideoPlayer extends TextureView {
 
             GLES20.glClearColor(1.0f, 0.f, 0.f, 1.f);
 
-            renderer = new SphericalSceneRenderer(getContext());
+//            renderer = new SphericalSceneRenderer(getContext());
+            renderer = new MadvGLRenderer(null, new Vec2f(3456,1728), new Vec2f(3456,1728));
 
             if (readyToPlay) {
                 prepareVideo(videoPath);
@@ -333,12 +342,13 @@ public class SphericalVideoPlayer extends TextureView {
 
             updateCamera();
 
-            renderer.onDrawFrame(
-                    videoDecodeTextureId,
-                    videoTextureMatrix,
-                    modelMatrix,
-                    viewMatrix,
-                    projectionMatrix);
+//            renderer.onDrawFrame(
+//                    videoDecodeTextureId,
+//                    videoTextureMatrix,
+//                    modelMatrix,
+//                    viewMatrix,
+//                    projectionMatrix);
+            renderer.draw(MadvGLRenderer.PanoramaDisplayModeStereoGraphic, 0, 0, mWidth, mHeight, false, null, null, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, videoDecodeTextureId, videoDecodeTextureId);
 
             eglRenderTarget.swapBuffers();
 
@@ -396,7 +406,9 @@ public class SphericalVideoPlayer extends TextureView {
             pendingCameraUpdate = false;
 
             eglRenderTarget.release();
-            renderer.release();
+//            renderer.release();
+            renderer.releaseNativeGLRenderer();
+            renderer = null;
         }
 
         private void onScroll(ScrollDeltaHolder deltaHolder) {

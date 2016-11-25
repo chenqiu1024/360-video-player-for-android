@@ -35,8 +35,15 @@ Vec2f Vec2fFromJava(JNIEnv *env, jobject vec2Obj) {
         field_Vec2f_y = env->GetFieldID(clazz_Vec2f, "y", "F");
     }
     Vec2f ret;
-    ret.width = (GLfloat) env->GetFloatField(vec2Obj, field_Vec2f_x);
-    ret.height = (GLfloat) env->GetFloatField(vec2Obj, field_Vec2f_y);
+    if (NULL != vec2Obj)
+    {
+        ret.width = (GLfloat) env->GetFloatField(vec2Obj, field_Vec2f_x);
+        ret.height = (GLfloat) env->GetFloatField(vec2Obj, field_Vec2f_y);
+    }
+    else
+    {
+        ret.width = ret.height = 0;
+    }
     return ret;
 }
 
