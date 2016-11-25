@@ -54,6 +54,8 @@ public class SphericalVideoPlayer extends TextureView {
     private static final String TAG = SphericalVideoPlayer.class.getSimpleName();
     private static final String RENDER_THREAD_NAME = "360RenderThread";
 
+    private static final boolean USE_MADVGLRENDERER = false;
+
     private MediaPlayer videoPlayerInternal;
     private RenderThread renderThread;
 
@@ -229,8 +231,8 @@ public class SphericalVideoPlayer extends TextureView {
         private boolean frameAvailable;
         private boolean pendingCameraUpdate;
 
-//        private SphericalSceneRenderer renderer;
-        private MadvGLRenderer renderer;
+        private SphericalSceneRenderer fbRenderer = null;
+        private MadvGLRenderer mvRenderer = null;
 
         private class ChoreographerCallback implements Choreographer.FrameCallback {
             @Override
@@ -313,8 +315,12 @@ public class SphericalVideoPlayer extends TextureView {
 
             GLES20.glClearColor(1.0f, 0.f, 0.f, 1.f);
 
-//            renderer = new SphericalSceneRenderer(getContext());
-            renderer = new MadvGLRenderer(null, new Vec2f(3456,1728), new Vec2f(3456,1728));
+            if (USE_MADVGLRENDERER) {
+                mvRenderer = new MadvGLRenderer(null, new Vec2f(3456,1728), new Vec2f(3456,1728));
+            }
+            else {
+                fbRenderer = new SphericalSceneRenderer(getContext());
+            }
 
             if (readyToPlay) {
                 prepareVideo(videoPath);
@@ -342,13 +348,19 @@ public class SphericalVideoPlayer extends TextureView {
 
             updateCamera();
 
-//            renderer.onDrawFrame(
-//                    videoDecodeTextureId,
-//                    videoTextureMatrix,
-//                    modelMatrix,
-//                    viewMatrix,
-//                    projectionMatrix);
-            renderer.draw(MadvGLRenderer.PanoramaDisplayModeStereoGraphic, 0, 0, mWidth, mHeight, false, null, null, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, videoDecodeTextureId, videoDecodeTextureId);
+            if (USE_MADVGLRENDERER)
+            {
+                mvRenderer.draw(MadvGLRenderer.PanoramaDisplayModeStereoGraphic, 0, 0, mWidth, mHeight, false, null, null, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, videoDecodeTextureId, videoDecodeTextureId);
+            }
+            else
+            {
+                fbRenderer.onDrawFrame(
+                        videoDecodeTextureId,
+                        videoTextureMatrix,
+                        modelMatrix,
+                        viewMatrix,
+                        projectionMatrix);
+            }
 
             eglRenderTarget.swapBuffers();
 
@@ -406,9 +418,16 @@ public class SphericalVideoPlayer extends TextureView {
             pendingCameraUpdate = false;
 
             eglRenderTarget.release();
-//            renderer.release();
-            renderer.releaseNativeGLRenderer();
-            renderer = null;
+
+            if (USE_MADVGLRENDERER)
+            {
+                mvRenderer.releaseNativeGLRenderer();
+                mvRenderer = null;
+            }
+            else
+            {
+                fbRenderer.release();
+            }
         }
 
         private void onScroll(ScrollDeltaHolder deltaHolder) {
