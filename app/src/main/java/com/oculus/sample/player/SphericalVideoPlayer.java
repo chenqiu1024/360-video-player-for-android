@@ -54,7 +54,7 @@ public class SphericalVideoPlayer extends TextureView {
     private static final String TAG = SphericalVideoPlayer.class.getSimpleName();
     private static final String RENDER_THREAD_NAME = "360RenderThread";
 
-    private static final boolean USE_MADVGLRENDERER = false;
+    private static final boolean USE_MADVGLRENDERER = true;
 
     private MediaPlayer videoPlayerInternal;
     private RenderThread renderThread;

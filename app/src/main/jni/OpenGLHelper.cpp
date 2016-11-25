@@ -574,18 +574,38 @@ Mesh3D* Mesh3D::createGrids(GLfloat width, GLfloat height, int columns, int rows
     }
     // Indices:
     // Strips parallel with latitude circles:
-    GLshort index = 0;
-    for (int i=0; i<mesh->primitiveCount; ++i)
+//    GLshort index = 0;
+//    for (int i=0; i<mesh->primitiveCount; ++i)
+//    {
+//        mesh->primitives[i]->type = GL_TRIANGLE_STRIP;
+//        mesh->primitives[i]->indexCount = 2 * (columns + 1);
+//        mesh->primitives[i]->indices = (GLshort*) malloc(sizeof(GLshort) * mesh->primitives[i]->indexCount);
+//        GLshort* pDst = mesh->primitives[i]->indices;
+//        for (int j=columns; j>=0; --j)
+//        {
+//            *pDst++ = index;
+//            *pDst++ = (index + columns + 1);
+//            ++index;
+//        }
+//    }
+    mesh->primitives[0]->type = GL_TRIANGLES;
+    mesh->primitives[0]->indexCount = 6 * columns * rows;
+    mesh->primitives[0]->indices = (GLshort*) malloc(sizeof(GLshort) * mesh->primitives[0]->indexCount);
+    GLshort* pDst = mesh->primitives[0]->indices;
+    for (int iLat=0; iLat<rows; ++iLat)
     {
-        mesh->primitives[i]->type = GL_TRIANGLE_STRIP;
-        mesh->primitives[i]->indexCount = 2 * (columns + 1);
-        mesh->primitives[i]->indices = (GLshort*) malloc(sizeof(GLshort) * mesh->primitives[i]->indexCount);
-        GLshort* pDst = mesh->primitives[i]->indices;
-        for (int j=columns; j>=0; --j)
+        for (int iLon=0; iLon<columns; ++iLon)
         {
-            *pDst++ = index;
-            *pDst++ = (index + columns + 1);
-            ++index;
+            GLshort i0 = (columns + 1) * iLat + iLon;
+            GLshort i1 = i0 + columns + 1;
+            GLshort i2 = i0 + 1;
+            GLshort i3 = i1 + 1;
+            *pDst++ = i0;
+            *pDst++ = i1;
+            *pDst++ = i2;
+            *pDst++ = i2;
+            *pDst++ = i1;
+            *pDst++ = i3;
         }
     }
     return mesh;
@@ -594,7 +614,7 @@ Mesh3D* Mesh3D::createGrids(GLfloat width, GLfloat height, int columns, int rows
 Mesh3D* Mesh3D::createSphereV0(GLfloat radius, int longitudeSegments, int latitudeSegments, bool flipX, bool flipY) {
     // (longitudeSegments + 1) Longitude circles, (latitudeSegments + 1) Latitude circles:
     // (latitudeSegments) strips:
-    Mesh3D* mesh = new Mesh3D((longitudeSegments + 1) * (latitudeSegments + 1), latitudeSegments);
+    Mesh3D* mesh = new Mesh3D((longitudeSegments + 1) * (latitudeSegments + 1), 1);
     // Vertices:
     int iVertex = 0;
     for (int iLat=0; iLat<=latitudeSegments; ++iLat)
@@ -623,18 +643,38 @@ Mesh3D* Mesh3D::createSphereV0(GLfloat radius, int longitudeSegments, int latitu
     }
     // Indices:
     // Strips parallel with latitude circles:
-    GLshort index = 0;
-    for (int i=0; i<mesh->primitiveCount; ++i)
+//    GLshort index = 0;
+//    for (int i=0; i<mesh->primitiveCount; ++i)
+//    {
+//        mesh->primitives[i]->type = GL_TRIANGLE_STRIP;
+//        mesh->primitives[i]->indexCount = 2 * (longitudeSegments + 1);
+//        mesh->primitives[i]->indices = (GLshort*) malloc(sizeof(GLshort) * mesh->primitives[i]->indexCount);
+//        GLshort* pDst = mesh->primitives[i]->indices;
+//        for (int j=longitudeSegments; j>=0; --j)
+//        {
+//            *pDst++ = index;
+//            *pDst++ = (index + longitudeSegments + 1);
+//            ++index;
+//        }
+//    }
+    mesh->primitives[0]->type = GL_TRIANGLES;
+    mesh->primitives[0]->indexCount = 6 * longitudeSegments * latitudeSegments;
+    mesh->primitives[0]->indices = (GLshort*) malloc(sizeof(GLshort) * mesh->primitives[0]->indexCount);
+    GLshort* pDst = mesh->primitives[0]->indices;
+    for (int iLat=0; iLat<latitudeSegments; ++iLat)
     {
-        mesh->primitives[i]->type = GL_TRIANGLE_STRIP;
-        mesh->primitives[i]->indexCount = 2 * (longitudeSegments + 1);
-        mesh->primitives[i]->indices = (GLshort*) malloc(sizeof(GLshort) * mesh->primitives[i]->indexCount);
-        GLshort* pDst = mesh->primitives[i]->indices;
-        for (int j=longitudeSegments; j>=0; --j)
+        for (int iLon=0; iLon<longitudeSegments; ++iLon)
         {
-            *pDst++ = index;
-            *pDst++ = (index + longitudeSegments + 1);
-            ++index;
+            GLshort i0 = (longitudeSegments + 1) * iLat + iLon;
+            GLshort i1 = i0 + longitudeSegments + 1;
+            GLshort i2 = i0 + 1;
+            GLshort i3 = i1 + 1;
+            *pDst++ = i0;
+            *pDst++ = i1;
+            *pDst++ = i2;
+            *pDst++ = i2;
+            *pDst++ = i1;
+            *pDst++ = i3;
         }
     }
     return mesh;
