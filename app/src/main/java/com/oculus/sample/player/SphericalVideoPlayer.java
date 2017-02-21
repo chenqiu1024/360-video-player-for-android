@@ -45,6 +45,7 @@ import com.madv360.glrenderer.MadvGLRenderer;
 import com.madv360.glrenderer.Vec2f;
 import com.oculus.sample.gles.EGLRenderTarget;
 import com.oculus.sample.gles.GLHelpers;
+import com.oculus.sample.gles.GridSceneRenderer;
 import com.oculus.sample.gles.SphericalSceneRenderer;
 
 import java.io.IOException;
@@ -233,7 +234,8 @@ public class SphericalVideoPlayer extends TextureView {
         private boolean frameAvailable;
         private boolean pendingCameraUpdate;
 
-        private SphericalSceneRenderer fbRenderer = null;
+        //private SphericalSceneRenderer fbRenderer = null;
+        private GridSceneRenderer fbRenderer = null;
         private MadvGLRenderer mvRenderer = null;
         private GLFilterCache mvFilterCache = null;
 
@@ -324,7 +326,7 @@ public class SphericalVideoPlayer extends TextureView {
                 GLES20.glDisable(GLES20.GL_DEPTH_TEST);
             }
             else {
-                fbRenderer = new SphericalSceneRenderer(getContext());
+                fbRenderer = new GridSceneRenderer(getContext());
             }
 
             if (readyToPlay) {
@@ -360,6 +362,9 @@ public class SphericalVideoPlayer extends TextureView {
             }
             else
             {
+                Matrix.setIdentityM(modelMatrix, 0);
+                Matrix.setIdentityM(viewMatrix, 0);
+                Matrix.setIdentityM(projectionMatrix, 0);
                 fbRenderer.onDrawFrame(
                         videoDecodeTextureId,
                         videoTextureMatrix,
