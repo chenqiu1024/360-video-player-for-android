@@ -43,11 +43,11 @@ public class GLHelpers {
             GLES20.glTexParameteri(
                     GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
                     GLES20.GL_TEXTURE_WRAP_S,
-                    GLES20.GL_CLAMP_TO_EDGE);
+                    GLES20.GL_REPEAT);
             GLES20.glTexParameteri(
                     GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
                     GLES20.GL_TEXTURE_WRAP_T,
-                    GLES20.GL_CLAMP_TO_EDGE);
+                    GLES20.GL_REPEAT);
         } catch (RuntimeException e) {
             Log.e(TAG, e.toString(), e);
             if (externalTextureId != -1) {

@@ -20,6 +20,7 @@ import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.opengl.GLES11;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -39,6 +40,7 @@ import android.view.View;
 
 import static com.oculus.sample.SphericalPlayerActivity.toast;
 
+import com.madv360.glrenderer.GLFilterCache;
 import com.madv360.glrenderer.MadvGLRenderer;
 import com.madv360.glrenderer.Vec2f;
 import com.oculus.sample.gles.EGLRenderTarget;
@@ -233,6 +235,7 @@ public class SphericalVideoPlayer extends TextureView {
 
         private SphericalSceneRenderer fbRenderer = null;
         private MadvGLRenderer mvRenderer = null;
+        private GLFilterCache mvFilterCache = null;
 
         private class ChoreographerCallback implements Choreographer.FrameCallback {
             @Override
@@ -317,6 +320,8 @@ public class SphericalVideoPlayer extends TextureView {
 
             if (USE_MADVGLRENDERER) {
                 mvRenderer = new MadvGLRenderer(null, new Vec2f(3456,1728), new Vec2f(3456,1728));
+                mvFilterCache = new GLFilterCache();
+                GLES20.glDisable(GLES20.GL_DEPTH_TEST);
             }
             else {
                 fbRenderer = new SphericalSceneRenderer(getContext());
@@ -350,7 +355,8 @@ public class SphericalVideoPlayer extends TextureView {
 
             if (USE_MADVGLRENDERER)
             {
-                mvRenderer.draw(MadvGLRenderer.PanoramaDisplayModeStereoGraphic, 0, 0, mWidth, mHeight, false, null, null, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, videoDecodeTextureId, videoDecodeTextureId);
+                mvFilterCache.render(GLFilterCache.GLFilterInverseColorID, 0,0,mWidth,mHeight, videoDecodeTextureId, GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
+                //mvRenderer.draw(MadvGLRenderer.PanoramaDisplayModePlain, 0, 0, mWidth, mHeight, false, null, null, GLES11Ext.GL_TEXTURE_EXTERNAL_OES, videoDecodeTextureId, videoDecodeTextureId);
             }
             else
             {
@@ -423,6 +429,9 @@ public class SphericalVideoPlayer extends TextureView {
             {
                 mvRenderer.releaseNativeGLRenderer();
                 mvRenderer = null;
+
+                mvFilterCache.releaseGLObjects();
+                mvFilterCache = null;
             }
             else
             {

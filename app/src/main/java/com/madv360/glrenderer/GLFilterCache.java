@@ -34,8 +34,9 @@ public class GLFilterCache {
     public static final int OrientationRotate180DegreeMirror = 7;
 
     public GLFilterCache() {
-        String resourceDirectory = getResourceDirectory(ElephantApp.getInstance().getApplicationContext());
-        init(resourceDirectory);
+//        String resourceDirectory = getResourceDirectory(ElephantApp.getInstance().getApplicationContext());
+//        init(resourceDirectory);
+        init(null);
     }
 
     private static String getResourceDirectory(Context context) {

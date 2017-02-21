@@ -10,8 +10,6 @@
 
 static const char* VertexShaderSource = STRINGIZE
 (
- precision highp float;
-
  attribute vec4 a_position; // 1
  attribute vec4 a_color; // 2
  attribute vec2 a_texcoord;
@@ -25,15 +23,15 @@ static const char* VertexShaderSource = STRINGIZE
 
  void main(void) { // 4
      v_color = a_color; // 5
-     v_texcoord = a_texcoord * u_texcoordSize + u_texcoordOrigin;
-     gl_Position = u_screenMatrix * (a_position / a_position.w);
+     v_texcoord = a_texcoord;///!!! * u_texcoordSize + u_texcoordOrigin;
+     gl_Position = a_position;///!!! u_screenMatrix * (a_position / a_position.w);
  }
  
  );
 
 static const char* FragmentShaderSource = STRINGIZE2
 (
- precision highp float;
+ precision mediump float;
 
  varying highp vec4 v_color;
  varying highp vec2 v_texcoord;
@@ -51,7 +49,7 @@ static const char* FragmentShaderSource = STRINGIZE2
  
  void main(void) {
      vec4 color = texture2D(u_texture, v_texcoord);
-     gl_FragColor = vec4(1.0 - color.rgb, color.a);
+     gl_FragColor = vec4(color.rgb, color.a);
  }
  
  );

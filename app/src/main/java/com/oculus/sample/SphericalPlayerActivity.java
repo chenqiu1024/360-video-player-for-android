@@ -37,7 +37,7 @@ import java.io.InputStreamReader;
 
 public class SphericalPlayerActivity extends AppCompatActivity {
     private final String SAMPLE_VIDEO_PATH =
-            "android.resource://com.oculus.sample/raw/" + R.raw.sample360;
+            "android.resource://com.oculus.sample/raw/" + R.raw.sample360_0;
 
     private static final int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0x1;
 
